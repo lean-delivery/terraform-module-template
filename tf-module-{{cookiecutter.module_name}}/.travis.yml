@@ -5,32 +5,27 @@ services:
   - docker
 
 before_script:
-  - echo 'before_script'
-  - git clone https://github.com/kamatama41/tfenv.git ~/.tfenv
-  - sudo ln -s ~/.tfenv/bin/* /usr/local/bin
+  - echo 'Installing tfenv'
+  - git clone https://github.com/kamatama41/tfenv.git
+  - PATH=$PATH:$(pwd)/tfenv/bin
+  - echo 'Installing terraform'
   - tfenv install latest:^0.11
   - terraform -v
-  - echo 'check credentials'
+  - echo 'Installing cred-alert'
   - os_name=$(uname | awk '{print tolower($1)}')
   - curl -o cred-alert https://s3.amazonaws.com/cred-alert/cli/current-release/cred-alert-cli_${os_name}
   - chmod 755 cred-alert
+  - echo 'Running cred-alert'
   - ./cred-alert scan -f .
 
 script:
-  - echo 'script'
-  - terraform init --input=false
-  - terraform fmt -check=true -list=true
-  - terraform validate -check-variables=false
-  # We provide Docker images for each version on DockerHub. With docker, you can run TFLint without installing it locally
-  # https://github.com/wata727/tflint
+  - echo 'Running terraform init'
+  - terraform init
+  - echo 'Running terraform fmt'
+  - terraform fmt -check=true
+  - echo 'Running terraform validate'
+  - terraform validate
+  - echo 'Running tfling'
   - docker run --rm -v $(pwd):/app/ --workdir=/app/ -t wata727/tflint --error-with-issues
-  # Collection of security and best practice test for static code analysis of terraform templates.
-  # This is terrascan wrapper.
-  # https://github.com/tmknom/terrascan
+  - echo 'Running terrascan'
   - docker run --rm -v $(pwd):/work/ --workdir=/work/ -t tmknom/terrascan --location . --test all
-  #- cd examples/some_tests
-  #- terraform init
-  #- terraform fmt -check=true
-  #- terraform validate
-  #- cd -
-  - terraform -v
