@@ -1,0 +1,20 @@
+---
+dist: xenial
+sudo: required
+
+language: python
+python:
+  - "2.7"
+
+install:
+  - curl -qLo terraform-docs https://github.com/segmentio/terraform-docs/releases/download/v0.6.0/terraform-docs-v0.6.0-linux-amd64
+  - chmod +x terraform-docs
+  - PATH=$(pwd):$PATH
+  - pip install tf-readme-validator
+  - terraform-docs --version
+  - tf-readme-validator --version
+
+script:
+  - cookiecutter --no-input .
+  - cd tf-module-default_module
+  - tf-readme-validator

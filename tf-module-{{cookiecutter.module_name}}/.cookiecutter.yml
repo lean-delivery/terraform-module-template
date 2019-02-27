@@ -1,0 +1,3 @@
+---
+default_context:
+  module_name: {{ cookiecutter.module_name }}
