@@ -1,5 +1,8 @@
 # terraform-development-kit
 
+[![License](https://img.shields.io/badge/license-Apache-green.svg?style=flat)](https://raw.githubusercontent.com/lean-delivery/terraform-development-kit/master/LICENSE)
+[![Build Status](https://travis-ci.org/lean-delivery/terraform-development-kit.svg?branch=master)](https://travis-ci.org/lean-delivery/terraform-development-kit)
+
 ## How to use:
 
 pip install cookiecutter
@@ -7,7 +10,7 @@ pip install cookiecutter
 ### Create a new module
 
 ```
-- cookiecutter https://github.com/lean-delivery/terraform-development-kit
+cookiecutter https://github.com/lean-delivery/terraform-development-kit
 ```
 
 Enter for the role name question a value without the tf-module- prefix, e.g. example.
