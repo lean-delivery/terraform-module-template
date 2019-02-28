@@ -16,7 +16,7 @@ before_script:
   - echo 'Installing terraform-docs'
   - curl -qLo terraform-docs https://github.com/segmentio/terraform-docs/releases/download/v0.6.0/terraform-docs-v0.6.0-linux-amd64
   - chmod +x terraform-docs
-  - echo 'Installing tf-readme-validator'
+  - echo 'Installing readme validator'
   - pip install tf-readme-validator
   - echo 'Updating PATH'
   - PATH=$PATH:$(pwd):$(pwd)/tfenv/bin
@@ -24,7 +24,7 @@ before_script:
   - terraform -v
   - cred-alert version
   - terraform-docs --version
-  - tf_readme_validator --version
+  - tf_readme_validator.py --version
 
 script:
   - echo 'Running terraform init'
@@ -34,7 +34,7 @@ script:
   - echo 'Running terraform validate'
   - terraform validate
   - echo 'Running readme validator'
-  - tf_readme_validator
+  - tf_readme_validator.py
   - echo 'Running cred-alert'
   - cred-alert scan -f .
   - echo 'Running tfling'
