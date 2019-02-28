@@ -12,9 +12,9 @@ install:
   - PATH=$(pwd):$PATH
   - pip install tf-readme-validator
   - terraform-docs --version
-  - tf_readme_validator --version
+  - tf_readme_validator.py --version
 
 script:
   - cookiecutter --no-input .
   - cd tf-module-default_module
-  - tf_readme_validator
+  - tf_readme_validator.py
