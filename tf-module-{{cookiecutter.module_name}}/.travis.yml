@@ -1,10 +1,16 @@
 dist: xenial
 sudo: required
 
+language: python
+python:
+  - "2.7"
+
 services:
   - docker
 
 before_script:
+  - echo 'Updating PATH'
+  - PATH=$PATH:$(pwd):$(pwd)/tfenv/bin
   - echo 'Installing tfenv'
   - git clone https://github.com/kamatama41/tfenv.git
   - echo 'Installing terraform'
@@ -18,8 +24,6 @@ before_script:
   - chmod +x terraform-docs
   - echo 'Installing readme validator'
   - pip install tf-readme-validator
-  - echo 'Updating PATH'
-  - PATH=$PATH:$(pwd):$(pwd)/tfenv/bin
   - echo 'Report tool versions'
   - terraform -v
   - cred-alert version
