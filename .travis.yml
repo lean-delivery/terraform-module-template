@@ -10,8 +10,9 @@ install:
   - curl -qLo terraform-docs https://github.com/segmentio/terraform-docs/releases/download/v0.6.0/terraform-docs-v0.6.0-linux-amd64
   - chmod +x terraform-docs
   - PATH=$(pwd):$PATH
-  - pip install tf-readme-validator
+  - pip install cookiecutter tf-readme-validator
   - terraform-docs --version
+  - cookiecutter --version
   - tf_readme_validator.py --version
 
 script:
