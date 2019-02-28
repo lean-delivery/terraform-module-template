@@ -1,0 +1,43 @@
+dist: xenial
+sudo: required
+
+services:
+  - docker
+
+before_script:
+  - echo 'Installing tfenv'
+  - git clone https://github.com/kamatama41/tfenv.git
+  - echo 'Installing terraform'
+  - tfenv install latest:^0.11
+  - echo 'Installing cred-alert'
+  - os_name=$(uname | awk '{print tolower($1)}')
+  - curl -qLo cred-alert https://s3.amazonaws.com/cred-alert/cli/current-release/cred-alert-cli_${os_name}
+  - chmod +x cred-alert
+  - echo 'Installing terraform-docs'
+  - curl -qLo terraform-docs https://github.com/segmentio/terraform-docs/releases/download/v0.6.0/terraform-docs-v0.6.0-linux-amd64
+  - chmod +x terraform-docs
+  - echo 'Installing tf-readme-validator'
+  - pip install tf-readme-validator
+  - echo 'Updating PATH'
+  - PATH=$PATH:$(pwd):$(pwd)/tfenv/bin
+  - echo 'Report tool versions'
+  - terraform -v
+  - cred-alert version
+  - terraform-docs --version
+  - tf_readme_validator --version
+
+script:
+  - echo 'Running terraform init'
+  - terraform init
+  - echo 'Running terraform fmt'
+  - terraform fmt -check=true
+  - echo 'Running terraform validate'
+  - terraform validate
+  - echo 'Running readme validator'
+  - tf_readme_validator
+  - echo 'Running cred-alert'
+  - cred-alert scan -f .
+  - echo 'Running tfling'
+  - docker run --rm -v $(pwd):/app/ --workdir=/app/ -t wata727/tflint --error-with-issues
+  - echo 'Running terrascan'
+  - docker run --rm -v $(pwd):/work/ --workdir=/work/ -t tmknom/terrascan --location . --test all

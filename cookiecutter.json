@@ -1,0 +1,8 @@
+{
+    "module_name": "default_module",
+    "license" : ["Apache", "MIT", "BSD-3", "GPLv3"],
+    "author_name" : "Lean Delivery Team <team@lean-delivery.com>",
+    "company_name": "EPAM Systems",
+    "role_description": "Yet Another Terraform Module From Lean Delivery",
+    "issue_tracker_url": "https://github.com/lean-delivery/tf-module-{{ cookiecutter.module_name }}/issues"
+}
