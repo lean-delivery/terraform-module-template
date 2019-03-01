@@ -26,6 +26,7 @@ A brief description of the module goes here.
 ## Terraform versions
 
 ## Contributing
+Thank you for your interest in contributing! Please refer to [CONTRIBUTING.md](https://github.com/lean-delivery/tf-module-{{ cookiecutter.module_name }}/CONTRIBUTING.md) for guidance.
 
 ## License
 
