@@ -87,7 +87,7 @@ go test
  * examples/main.tf
  * examples/variables.tf
  * examples/outputs.tf
- * [test/tf_module_test.go](tf-module-%7B%7B%cookiecutter.module_name%20%7D%7D/test/tf_module_test.go)
+ * [test/tf_module_test.go](tf-module-%7B%7Bcookiecutter.module_name%7D%7D/test/tf_module_test.go)
 
 ## tf_module_test.go
 In order to avoid a name conflict during execution, a random line of text is added to the name of the resource. By default, the name is set by the parameter "name" in the description of the structure that is passed to the module as input parameters.
@@ -97,8 +97,8 @@ Vars: map[string]interface{}{
     "name"      : "test_name_" + randSeq(10),
 },
 ```
-If the variable name or any other identifier of your resource has a different name, change this name in [tf_module_test.go](tf-module-%7B%7B%cookiecutter.module_name%20%7D%7D/test/tf_module_test.go).
-If your module has require variables, tool shows to you list with these variables. WARNING! Add these variables to [tf_module_test.go](tf-module-%7B%7B%cookiecutter.module_name%20%7D%7D/test/tf_module_test.go)
+If the variable name or any other identifier of your resource has a different name, change this name in [tf_module_test.go](tf-module-%7B%7Bcookiecutter.module_name%7D%7D/test/tf_module_test.go).
+If your module has require variables, tool shows to you list with these variables. WARNING! Add these variables to [tf_module_test.go](tf-module-%7B%7Bcookiecutter.module_name%7D%7D/test/tf_module_test.go)
 
 
 ## Terraform versions
