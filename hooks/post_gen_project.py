@@ -1,5 +1,8 @@
 import re
+import os
 import shutil
+
+
 
 def main():
     if "{{ cookiecutter.creating_tests }}" != "Yes":
@@ -7,7 +10,7 @@ def main():
         shutil.rmtree("test/")
         return 0
 
-    restoring_from_backup("backup/")
+    restoring_from_backup("backup/", ".")
     making_maintf()
     making_outputstf()
     making_variablestf()
@@ -15,11 +18,17 @@ def main():
     for __index__ in range(len(require_vars)):
         print("Warning! Require vriable: " + require_vars[__index__])
 
-def restoring_from_backup(path):
-    shutil.copyfile(path + "main.tf", "main.tf")
-    shutil.copyfile(path + "variables.tf", "variables.tf")
-    shutil.copyfile(path + "outputs.tf", "outputs.tf")
-    shutil.rmtree(path)
+
+
+def restoring_from_backup(src, dest):
+    src_files = os.listdir(src)
+    for file_name in src_files:
+        full_file_name = os.path.join(src, file_name)
+        if (os.path.isfile(full_file_name)):
+            shutil.copy(full_file_name, dest)
+    shutil.rmtree(src)
+
+
 
 def get_namelist(prefix, postfix, file_path):
     array = []

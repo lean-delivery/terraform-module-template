@@ -7,3 +7,14 @@
 
 # .tfvars files
 *.tfvars
+
+.backups/
+.backups/*
+
+examples/.terraform
+examples/terraform.tfstate
+examples/terraform.tfvars
+
+# OS X files
+.history
+.DS_Store
