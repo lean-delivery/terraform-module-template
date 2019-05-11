@@ -16,8 +16,8 @@ def main():
         making_outputstf()
         making_variablestf()
         require_vars = check_require_vars("variables.tf")
-        for __index__ in range(len(require_vars)):
-            print("Warning! Require vriable: " + require_vars[__index__])
+        for __var__ in require_vars:
+            print("Warning! Require vriable: " + __var__)
 
 
 def restoring_from_backup(src, dest):
@@ -82,13 +82,13 @@ def making_variablestf():
 def making_outputstf():
     """creating and writing outputs.tf-file in examples"""
     outputs_list = get_namelist("output \"", "\" {", "outputs.tf")
-    for __index__ in range(len(outputs_list)):
+    for __var__ in outputs_list:
         output_string = ("\noutput \"" +
-                         outputs_list[__index__] +
+                         __var__ +
                          "\" {\n  value = \"${module." +
                          "{{ cookiecutter.example_module_name}}" +
                          "." +
-                         outputs_list[__index__] +
+                         __var__ +
                          "}\"\n}\n")
         text_addition("examples/outputs.tf", output_string)
 
@@ -104,18 +104,18 @@ def making_maintf():
     )
 
     bigest_len = 0
-    for __index__ in range(len(variables_list)):
-        if bigest_len < len(variables_list[__index__]):
-            bigest_len = len(variables_list[__index__])
+    for __var__ in variables_list:
+        if bigest_len < len(__var__):
+            bigest_len = len(__var__)
 
-    for __index__ in range(len(variables_list)):
+    for __var__ in variables_list:
 
-        spases_str = spaces_gen(bigest_len - len(variables_list[__index__]))
+        spases_str = spaces_gen(bigest_len - len(__var__))
         variable_string = ("  " +
-                           variables_list[__index__] +
+                           __var__ +
                            spases_str +
                            " = \"${var." +
-                           variables_list[__index__] +
+                           __var__ +
                            "}\"\n")
 
         text_addition("examples/main.tf", variable_string)
@@ -148,9 +148,9 @@ def check_require_vars(varfile_path):
 
     del variable_array[0]
 
-    for __index__ in range(len(variable_array)):
+    for __var__ in variable_array:
         flag = False
-        for line in variable_array[__index__]:
+        for line in __var__:
             result = re.match(r'^  default .*$', line)
             if result:
                 flag = True
@@ -158,12 +158,12 @@ def check_require_vars(varfile_path):
         if (flag is False and
                 find_word(
                     "^" + prefix + "[A-z]*" + postfix + "$",
-                    variable_array[__index__][0]
+                    __var__[0]
                 )):
             array.append(
                 find_word(
                     "^" + prefix + "[A-z]*" + postfix + "$",
-                    variable_array[__index__][0],
+                    __var__[0],
                     prefix,
                     postfix
                 )
