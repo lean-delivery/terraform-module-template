@@ -1,97 +1,107 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Steps after creating templates"""
+
+from __future__ import print_function
 import re
 import os
 import shutil
 
 
-
 def main():
-    if "{{ cookiecutter.creating_tests }}" != "Yes":
-        shutil.rmtree("examples/")
-        shutil.rmtree("test/")
-        return 0
-
-    restoring_from_backup("backup/", ".")
-    making_maintf()
-    making_outputstf()
-    making_variablestf()
-    require_vars = check_require_vars("variables.tf")
-    for __index__ in range(len(require_vars)):
-        print("Warning! Require vriable: " + require_vars[__index__])
-
+    """Main function"""
+    if "{{ cookiecutter.creating_tests }}" == "Yes":
+        restoring_from_backup("backup/", ".")
+        making_maintf()
+        making_outputstf()
+        making_variablestf()
+        require_vars = check_require_vars("variables.tf")
+        for __index__ in range(len(require_vars)):
+            print("Warning! Require vriable: " + require_vars[__index__])
 
 
 def restoring_from_backup(src, dest):
-    src_files = os.listdir(src)
-    for file_name in src_files:
+    """Restore all files from backup after using overwrite-if-exists key"""
+    src_rest_files = os.listdir(src)
+    for file_name in src_rest_files:
         full_file_name = os.path.join(src, file_name)
-        if (os.path.isfile(full_file_name)):
+        if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, dest)
     shutil.rmtree(src)
 
 
-
 def get_namelist(prefix, postfix, file_path):
+    """get all names between prefix and postfix"""
     array = []
-    file = open(file_path)
-    for line in file:
+    tf_file = open(file_path)
+    for line in tf_file:
         if find_word("^" + prefix + "[A-z]*" + postfix + "$", line):
-            array.append(find_word("^" + prefix + "[A-z]*" + postfix + "$", line, prefix, postfix))
+            array.append(
+                find_word(
+                    "^" + prefix + "[A-z]*" + postfix + "$",
+                    line,
+                    prefix,
+                    postfix
+                )
+            )
     return array
 
 
-
-def find_word(regexp, line, cut_prefix = "", cut_postfix = ""):
+def find_word(regexp, line, cut_prefix="", cut_postfix=""):
+    """find word between prefix and postfix"""
     result = re.match(regexp, line)
     if result:
         raw_string = "{}".format(result.group(0))
         return raw_string[len(cut_prefix):len(raw_string)-len(cut_postfix)]
-
+    return 0
 
 
 def text_addition(file_path, test_postfix):
-    file = open(file_path, "a")
-    file.write(test_postfix)
-    file.close()
+    """adding text to file"""
+    tf_file = open(file_path, "a")
+    tf_file.write(test_postfix)
+    tf_file.close()
 
 
-
-def spaces_generator(count):
+def spaces_gen(count):
+    """getting N spaces"""
     spases = ""
     for _ in range(count):
         spases = spases + " "
     return spases
 
 
-
 def making_variablestf():
-    file = open("variables.tf")
+    """creating and writing variables.tf-file in examples"""
+    tf_file = open("variables.tf")
     text_addition("examples/variables.tf", "\n")
-    for line in file:
+    for line in tf_file:
         text_addition("examples/variables.tf", line)
 
 
-
 def making_outputstf():
+    """creating and writing outputs.tf-file in examples"""
     outputs_list = get_namelist("output \"", "\" {", "outputs.tf")
     for __index__ in range(len(outputs_list)):
-
-        output_string = (
-                            "\noutput \"" +
-                            outputs_list[__index__] +
-                            "\" {\n  value = \"${module." +
-                            "{{ cookiecutter.example_module_name}}" +
-                            "." +
-                            outputs_list[__index__] +
-                            "}\"\n}\n"
-                        )
-
+        output_string = ("\noutput \"" +
+                         outputs_list[__index__] +
+                         "\" {\n  value = \"${module." +
+                         "{{ cookiecutter.example_module_name}}" +
+                         "." +
+                         outputs_list[__index__] +
+                         "}\"\n}\n")
         text_addition("examples/outputs.tf", output_string)
 
 
-
 def making_maintf():
+    """creating and writing main.tf-file in examples"""
     variables_list = get_namelist("variable \"", "\" {", "variables.tf")
-    text_addition("examples/main.tf", "\nmodule \"" + "{{ cookiecutter.example_module_name}}" + "\" {\n")
+    text_addition(
+        "examples/main.tf",
+        "\nmodule \"" +
+        "{{ cookiecutter.example_module_name}}" +
+        "\" {\n"
+    )
 
     bigest_len = 0
     for __index__ in range(len(variables_list)):
@@ -100,30 +110,34 @@ def making_maintf():
 
     for __index__ in range(len(variables_list)):
 
-        variable_string = (
-                            "  " +
-                            variables_list[__index__] +
-                            spaces_generator(bigest_len - len(variables_list[__index__])) +
-                            " = \"${var." +
-                            variables_list[__index__] +
-                            "}\"\n"
-                        )
+        spases_str = spaces_gen(bigest_len - len(variables_list[__index__]))
+        variable_string = ("  " +
+                           variables_list[__index__] +
+                           spases_str +
+                           " = \"${var." +
+                           variables_list[__index__] +
+                           "}\"\n")
 
         text_addition("examples/main.tf", variable_string)
-    text_addition("examples/main.tf", "  source" + spaces_generator(bigest_len - len("source")) + " = \"../../\"\n}\n")
-
+    text_addition(
+        "examples/main.tf",
+        "  source" +
+        spaces_gen(bigest_len - len("source")) +
+        " = \"../../\"\n}\n"
+    )
 
 
 def check_require_vars(varfile_path):
+    """Check and show all requare variables (without defailt-value)"""
     prefix = "variable \""
     postfix = "\" {"
     array = []
     variable = []
     variable_array = []
 
-    file = open(varfile_path)
+    tf_file = open(varfile_path)
 
-    for line in file:
+    for line in tf_file:
         result = re.match(r'variable ".*" {$', line, flags=re.MULTILINE)
         if result:
             result_str = "{}".format(result.group(0))
@@ -141,11 +155,21 @@ def check_require_vars(varfile_path):
             if result:
                 flag = True
 
-        if flag != True and find_word("^" + prefix + "[A-z]*" + postfix + "$", variable_array[__index__][0]):
-            array.append(find_word("^" + prefix + "[A-z]*" + postfix + "$", variable_array[__index__][0], prefix, postfix))
+        if (flag is False and
+                find_word(
+                    "^" + prefix + "[A-z]*" + postfix + "$",
+                    variable_array[__index__][0]
+                )):
+            array.append(
+                find_word(
+                    "^" + prefix + "[A-z]*" + postfix + "$",
+                    variable_array[__index__][0],
+                    prefix,
+                    postfix
+                )
+            )
     return array
 
 
-
-if __name__== "__main__":
+if __name__ == "__main__":
     main()
