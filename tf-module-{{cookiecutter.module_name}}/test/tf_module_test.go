@@ -10,7 +10,6 @@ import (
 )
 
 var terraformDirectory = "../examples"
-var region             = "{{ cookiecutter.aws_region }}"
 var account            = ""
 
 func TestSetUp(t *testing.T) {
@@ -19,8 +18,7 @@ func TestSetUp(t *testing.T) {
     terraformOptions := &terraform.Options{
         TerraformDir: terraformDirectory,
         Vars: map[string]interface{}{
-            "aws_region": region,
-            "name"      : "test_name_" + randSeq(10),
+            "name": "test_name_" + randSeq(10),
         },
     }
     defer terraform.Destroy(t, terraformOptions)

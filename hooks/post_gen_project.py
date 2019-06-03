@@ -12,12 +12,13 @@ def main():
     """Main function"""
     if "{{ cookiecutter.creating_tests }}" == "Yes":
         restoring_from_backup("backup/", ".")
-        making_maintf()
         making_outputstf()
         making_variablestf()
+        making_readme()
         require_vars = check_require_vars("variables.tf")
         for __var__ in require_vars:
             print("Warning! Require vriable: " + __var__)
+        making_maintf(require_vars)
 
 
 def restoring_from_backup(src, dest):
@@ -71,6 +72,21 @@ def spaces_gen(count):
     return spases
 
 
+def making_readme():
+    """creating and writing test/readme.md-file in examples"""
+    tf_version = ("\n\n" +
+                  "## Terraform version\n" +
+                  os.popen("terraform version").read().rstrip("\n\r") +
+                  "\n")
+    go_version = ("\n\n" +
+                  "## Go version\n" +
+                  os.popen("go version").read().rstrip("\n\r") +
+                  "\n")
+
+    text_addition("test/readme.md", tf_version)
+    text_addition("test/readme.md", go_version)
+
+
 def making_variablestf():
     """creating and writing variables.tf-file in examples"""
     tf_file = open("variables.tf")
@@ -93,7 +109,7 @@ def making_outputstf():
         text_addition("examples/outputs.tf", output_string)
 
 
-def making_maintf():
+def making_maintf(require_vars):
     """creating and writing main.tf-file in examples"""
     variables_list = get_namelist("variable \"", "\" {", "variables.tf")
     text_addition(
@@ -109,16 +125,23 @@ def making_maintf():
             bigest_len = len(__var__)
 
     for __var__ in variables_list:
-
         spases_str = spaces_gen(bigest_len - len(__var__))
         variable_string = ("  " +
                            __var__ +
                            spases_str +
                            " = \"${var." +
                            __var__ +
-                           "}\"\n")
+                           "}\"")
 
-        text_addition("examples/main.tf", variable_string)
+        if __var__ in require_vars:
+            warning_str = (" # Warning! Require vriable. " +
+                           "Not found defailt-value for \"${var." +
+                           __var__ +
+                           "}\" in variables.tf" +
+                           "\n")
+            text_addition("examples/main.tf", variable_string + warning_str)
+        else:
+            text_addition("examples/main.tf", variable_string + "\n")
     text_addition(
         "examples/main.tf",
         "  source" +
