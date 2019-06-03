@@ -11,15 +11,17 @@ install:
   - chmod +x terraform-docs
   - PATH=$(pwd):$PATH
   - pip install cookiecutter tf-readme-validator
+  - pip install pep8
+  - pip install pycodestyle
+  - pip install pylint
   - terraform-docs --version
   - cookiecutter --version
   - tf_readme_validator.py --version
-  - pip install pep8
-  - pip install pylint
 
 script:
   - cookiecutter --no-input .
   - cd tf-module-default_module
   - tf_readme_validator.py
-  - pep8 hooks/
-  - pylint -f colorized -rn hooks/
+  - pep8 ../hooks/
+  - pycodestyle ../hooks/
+  - pylint -f colorized -rn ../hooks/
