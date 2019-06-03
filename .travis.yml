@@ -22,7 +22,7 @@ install:
 script:
   - cookiecutter --no-input .
   - cd tf-module-default_module
-  - tf_readme_validator.py
+  # - tf_readme_validator.py
   - pep8 ../hooks/
   - pycodestyle ../hooks/
   - pylint -f colorized -rn ../hooks/
